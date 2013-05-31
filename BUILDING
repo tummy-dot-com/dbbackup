@@ -1,0 +1,45 @@
+#To make a new release:
+
+if [ -z "$RELEASE" ]; then
+   echo "You MUST set the RELEASE variable.  Current releases:"
+   echo
+   git tag | sort -r | head -5
+   echo
+   echo "Re-run after running: export RELEASE="
+   exit 1
+fi
+
+if ! git tag | grep -q release-"$RELEASE"; then
+   git tag -s release-"$RELEASE"
+   git push
+fi
+cd /tmp
+release $RELEASE dbbackup
+
+rm -f /home/jafo/projects/dbbackup-yum/rpm/dbbackup*.rpm
+rm -f /home/jafo/projects/dbbackup-yum/deb/dbbackup*.deb
+
+scp dbbackup-$RELEASE.tar.gz root@dev:/home/software/
+ssh root@dev rpmbuild -ta /home/software/dbbackup-$RELEASE.tar.gz
+scp root@dev:/usr/src/redhat/RPMS/noarch/dbbackup-$RELEASE-1.noarch.rpm \
+      /home/jafo/projects/dbbackup-yum/rpm/
+
+scp dbbackup-$RELEASE.tar.gz root@theobromine:/root/dbbackup/
+ssh root@theobromine "( cd dbbackup && tar xfz dbbackup-$RELEASE.tar.gz \
+      && cd dbbackup-$RELEASE && dpkg-buildpackage -rfakeroot )"
+scp root@theobromine:dbbackup/dbbackup_$RELEASE-1_all.deb \
+      /home/jafo/projects/dbbackup-yum/deb/
+
+cd /home/jafo/projects/dbbackup-yum/ &&
+   rsync -av --delete --progress . root@theobromine:dbbackup/repo/ &&
+   ssh root@theobromine 'cd dbbackup/repo && bash setup.deb' &&
+   rsync -av --delete --progress root@theobromine:dbbackup/repo/ .
+
+./sign
+
+rsync -av --delete deb/ root@dev:/mnt/data1/yum/dbbackup/deb/
+rsync -av --delete rpm/ root@dev:/mnt/data1/yum/dbbackup/rpm/
+ssh root@dev 'cd /mnt/data1/yum/dbbackup/rpm/ && createrepo -v . && \
+      yum-arch -v .'
+
+ssh root@dev "( cd /home/ftp/pub/tummy/dbbackup/ && cp /home/software/dbbackup-$RELEASE.tar.gz . && cp /mnt/data1/yum/dbbackup/deb/dbbackup_$RELEASE-1_all.deb . && cp /mnt/data1/yum/dbbackup/rpm/dbbackup-$RELEASE-1.noarch.rpm . && tar xf dbbackup-$RELEASE.tar.gz && cp dbbackup-$RELEASE/WHATSNEW . && rm -rf dbbackup-$RELEASE )"
