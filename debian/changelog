@@ -1,0 +1,12 @@
+dbbackup (1.16-1) unstable; urgency=low
+
+  * Initial 1.16 Fixed the use of $PIPESTATUS to use the first array element.
+
+ -- Mike Loseke <mike@tummy.com>  Tue, 28 Oct 2009 11:24:55 -0600
+
+dbbackup (1.15-1) unstable; urgency=low
+
+  * Initial 1.15 .deb packaging
+
+ -- Mike Loseke <mike@tummy.com>  Tue, 27 Oct 2009 11:45:55 -0600
+

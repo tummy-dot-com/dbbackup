@@ -1,0 +1,116 @@
+#!/bin/bash
+#
+#  Dump databases to the file-system to allow them to properly be backed up.
+#
+#  Written by Sean Reifshcneider, tummy.com, ltd.  <jafo-dbbackup@tummy.com>
+#  Released under the Tummy Public License (based on the Mozilla Public License)
+#  See http://www.tummy.com/ for more information.
+
+VERSION='$Revision: 1.17 $'
+
+#  read config file
+. /etc/dbbackup.conf
+
+DATE=`date +%Y-%m-%d`
+
+###############################################
+#  create directory if it doesn't already exist
+if [ ! -d "${DUMPDIR}" ]
+then
+	mkdir "${DUMPDIR}"
+	chmod 700 "${DUMPDIR}"
+	chown root "${DUMPDIR}"
+fi
+
+#####################
+#  remove old backups
+removeold () {
+	if [ ! -z "$2" ]
+	then
+		find "${1}"/ -type f -mtime +"${2}" -name "${3}"-\* |
+				xargs --no-run-if-empty rm -f
+	fi
+	}
+
+###################################################
+#  call mysqldump with username/password if defined
+mysqluserdump() {
+	if	[ -z "$MYSQLUSER" ]; then
+		HOME=/root mysqldump "$@"
+		return "$?"
+	elif	[ -n "$MYSQLUSER" -a -z "$MYSQLPW" ]; then
+		HOME=/root mysqldump -u "${MYSQLUSER}" "$@"
+		return "$?"
+	else
+		HOME=/root mysqldump -u "${MYSQLUSER}" --password="${MYSQLPW}" "$@"
+		return "$?"
+	fi
+	}
+
+####################
+#  rpm database dump
+DORPM=`echo $DORPM | tr [A-Z] [a-z]`
+if [ "$DORPM" = 'yes' ]
+then
+	RPMFILE="${DUMPDIR}"/.rpmlastbackup
+	OLDFILE=`find ${RPMFILE} -mtime +${RPMRUNDAYS} 2>/dev/null`
+	if [ ! -f "$RPMFILE" -o ! -z "${OLDFILE}" ]
+	then
+		cd /
+		touch -d '1 hour ago' "${RPMFILE}"
+		tar c var/lib/rpm |
+				${COMPRESS} >"${DUMPDIR}"/"rpm-${DATE}.tar${COMPRESSEXT}"
+		rm -f "${DUMPDIR}"/"rpm.tar${COMPRESSEXT}" "${DUMPDIR}"/"rpm.tar"
+		ln "${DUMPDIR}"/"rpm-${DATE}.tar${COMPRESSEXT}" "${DUMPDIR}"/"rpm.tar${COMPRESSEXT}"
+	fi
+fi
+removeold "${DUMPDIR}" "${RPMKEEPDAYS}" "rpm"
+
+#########################
+#  postgres database dump
+DOPOSTGRES=`echo $DOPOSTGRES | tr [A-Z] [a-z]`
+if [ -x '/usr/bin/pg_dumpall' -a "$DOPOSTGRES" = 'yes' ]
+then
+	( unset ENV; unset BASH_ENV; su postgres -c "pg_dumpall -c" |
+			${COMPRESS} >"${DUMPDIR}"/"postgres-${DATE}${COMPRESSEXT}"
+			) 2>/dev/null
+	rm -f "${DUMPDIR}"/postgres "${DUMPDIR}"/postgres.*
+	ln "${DUMPDIR}"/"postgres-${DATE}${COMPRESSEXT}" \
+			"${DUMPDIR}"/"postgres${COMPRESSEXT}"
+fi
+removeold "${DUMPDIR}" "${PGKEEPDAYS}" "postgres"
+
+######################
+#  mysql database dump
+DOMYSQL=`echo $DOMYSQL | tr [A-Z] [a-z]`
+if [ -x '/usr/bin/mysqldump' -a "$DOMYSQL" = 'yes' ]
+then
+	#  check to see if we need the --events switch
+	OPTION_EVENTS="--events"
+	if mysqldump -V | grep -q -e "Distrib 4" -e "Distrib 5.0"; then
+		OPTION_EVENTS=""
+	fi
+
+	#  do a preliminary dump to make sure everything is cached
+	if [ "$MYSQLCACHEDATA" == 1 -o "MYSQLPRECACHEDATA" == yes ]; then
+		mysqluserdump --opt -A $OPTION_EVENTS \
+				--skip-lock-tables --skip-lock-all-tables >/dev/null
+	fi
+
+	if [ "$MYSQLCOMPRESSAFTER" == 1 -o "$MYSQLCOMPRESSAFTER" == yes ]; then
+		mysqluserdump --opt -A $OPTION_EVENTS >"${DUMPDIR}"/"mysql-${DATE}"
+		${COMPRESS} "${DUMPDIR}"/"mysql-${DATE}"
+		rm -f "${DUMPDIR}"/mysql "${DUMPDIR}"/mysql.*
+		ln "${DUMPDIR}"/"mysql-${DATE}${COMPRESSEXT}" \
+				"${DUMPDIR}"/"mysql${COMPRESSEXT}"
+	else
+		mysqluserdump --opt -A $OPTION_EVENTS | \
+				${COMPRESS} >"${DUMPDIR}"/"mysql-${DATE}${COMPRESSEXT}"
+		rm -f "${DUMPDIR}"/mysql "${DUMPDIR}"/mysql.*
+		ln "${DUMPDIR}"/"mysql-${DATE}${COMPRESSEXT}" \
+				"${DUMPDIR}"/"mysql${COMPRESSEXT}"
+	fi
+fi
+removeold "${DUMPDIR}" "${MYSQLKEEPDAYS}" "mysql"
+
+exit 0

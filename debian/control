@@ -1,0 +1,10 @@
+Source: dbbackup
+Section: admin
+Priority: extra
+Maintainer: Mike Loseke <mike@tummy.com>
+
+Package: dbbackup
+Architecture: all
+Description: Simple database backups
+ dbbackup is a simple script, run from cron, to make backups of Postgres and
+ MySQL databases.

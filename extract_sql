@@ -1,0 +1,95 @@
+#!/usr/bin/env python
+#
+# extract_sql - Mike Loseke <mike@tummy.com>, 2012-05-25
+#
+# Extract a table from a database dump, or an entire database if there are 
+# multiple in the dump.
+#
+# Use the "-h" command-line argument for usage, but in general it would be:
+#
+#    ./extract_sql -f /tmp/file.sql -d dbname -t table >/tmp/mytable.sql
+# or:
+#
+#    bzcat file.bz2 | ./extract_sql -l
+#
+# Currently this script will only parse mysqldump output.  We should add the 
+# code to parse a pgsql dump also.
+
+import bz2, gzip, optparse, os, re, sys
+
+parser = optparse.OptionParser("usage: %prog -h|--help\n       %prog [-f <filename>] -l\n       %prog [-f <filename>] [options]")
+parser.add_option('-f', '--file', dest = 'file', default = '',
+                  help = 'Dump file', metavar = 'FILE')
+parser.add_option('-d', '--database', dest = 'dbname', default = '',
+                  help = 'Database name', metavar = 'DBNAME')
+parser.add_option('-t', '--table', dest = 'table', default = '',
+                  help = 'Table name', metavar = 'TABLE')
+parser.add_option('-l', '--list', dest = 'list', action = 'store_true',
+                  help = 'List databases and tables', default = 0)
+#parser.add_option('-D', '--db-type', dest = 'dbtype', default = 'mysql',
+#                  help = 'Database type', metavar = 'TYPE')
+options, args = parser.parse_args()
+
+if len(sys.argv) == 0:
+    parser.print_usage()
+    sys.exit(0)
+
+if options.file and not os.path.isfile(options.file):
+    sys.exit('File does not exist.')
+if options.dbname == '' and options.table == '' and not options.list:
+    sys.exit('No database or table specified, please use "-h"')
+
+# Determine how we're going to read the data.
+inf = sys.stdin # Default to STDIN if no file is specified.
+if options.file:
+    comp = re.search('\.gz$|\.bz2$', options.file)
+    if comp:
+        if comp.group() == '.gz':
+            inf = gzip.open(options.file, 'rb')
+        if comp.group() == '.bz2':
+            inf = bz2.BZ2File(options.file, 'rb')
+    else:
+        inf = open(options.file, 'r') # Assume an uncompressed dump file.
+
+dbflag = 1 # By default we don't care what the database name is.
+tbflag = 0
+
+# Loop through the data using the open method decided upon above.
+for line in inf:
+
+    # Check for the current database.
+    d = re.search('^-- Current Database: `(.*)`', line)
+    #d = re.search('^-- (?:Data for )?Name:\s*([^\s;]+);\s*Type:\s*([^;]+);(.*)$', line)
+    #d = re.search('^\\\connect (\w*)', line)
+    if d:
+        tbflag = 0 # Reset this if we're into a new database.
+        if d.group(1) == options.dbname:
+            dbflag = 1
+        elif options.dbname != '': dbflag = 0
+        if options.list:
+            print '\nDB:    %s' % d.group(1)
+            continue
+
+    # Print the entire database if we don't have a table
+    if dbflag == 1 and options.table == '' and not options.list:
+        print line.strip()
+        continue
+
+    # Check for the current table.
+    t = re.search('^-- Table structure for table `(.*)`', line)
+    #t = re.search('^CREATE TABLE (\w*) \(', line)
+    #t = re.search('^-- Data for Name: (\w*); Type: TABLE DATA.*', line)
+    if t:
+        if t.group(1) == options.table:
+            tbflag = 1
+        else:
+            tbflag = 0
+        if options.list:
+            print 'Table: %s' % t.group(1)
+            continue
+
+    # Print the lines if we're in the right area.
+    if dbflag == 1 and tbflag == 1: print line.strip()
+
+inf.close() # Close input.
+

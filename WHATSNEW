@@ -1,0 +1,87 @@
+================================
+Version 1.24 -- Wed May 31, 2013
+
+In the case where Postgres is disabled, the 1.23 changes were throwing
+      out some warning messages.  Fixed.
+
+================================
+Version 1.23 -- Wed May 29, 2013
+
+Now makes hard links to a current backup copy without date to make it
+      more friendly to backup systems.
+
+================================
+Version 1.22 -- Wed May 01, 2013
+
+If not version 4 or 5.1, dump with "--events".
+
+================================
+Version 1.21 -- Wed Sep 12, 2012
+
+Fixed the argument handling if MYSQLCOMPRESSAFTER or MYSQLCACHEDATA are not
+      set.
+
+================================
+Version 1.20 -- Tue Jun 19, 2012
+
+Adding "extract_sql" script to pull out particular tables.
+Changing references to mysql user/password to be more consistent.
+Changed the MYSQLPRECACHEDATA and MYSQLCOMPRESSAFTER values to take
+      "yes" and "no" rahter than "0" and "1", so they are like the other
+      variables in the conf file.  Historic values will continue to work.
+Changed the MYSQLCACHEDATA to MYSQLPRECACHEDATA to make it more closely
+      reflect the actual use.  Historic values will continue to work.
+
+================================
+Version 1.18 -- Thu Feb 02, 2012
+
+Adding options to speed up MySQL dumps and reduce the locking time, but
+      uses more disc space.  See the config file for more information.
+
+================================
+Version 1.17 -- Tue Nov 10, 2009
+
+Prefixed the first mysqldump attempt with "HOME=/root" for systems that wipe
+the shell environment from cron.
+
+================================
+Version 1.16 -- Wed Oct 28, 2009
+
+Fixed the use of $PIPESTATUS to use the first array element.
+
+================================
+Version 1.15 -- Tue Oct 27, 2009
+
+Includes Debian package files.
+Fixes a bug in the MySQL no-password code.
+Switched to using /bin/bash instead of /bin/sh.
+
+================================
+Version 1.14 -- Fri Oct 23, 2009
+
+It now works with dash as well as bash.  (Mike Loseke)
+MySQL is tried with no password first, and if that fails then with the
+      password settings.  (Mike Loseke)
+
+================================
+Version 1.13 -- Sun Apr 19, 2009
+
+Adding a MYSQLUSER to the config file.
+
+================================
+Version 1.12 -- Sun Mar 23, 2008
+
+Added conversion of the DO* settings to lower-case.
+Adding trailing / to "removeold" directory so that it picks it up if it's a
+      symlink.
+
+================================
+Version 1.10 -- Sat Aug 17, 2002
+
+Fixed a bug in the redirection added in 1.09.
+
+================================
+Version 1.09 -- Sun Jun 23, 2002
+
+PostgreSQL 7.2.1 pg_dumpall now writes a bunch of status messages to
+      stderr.  dbbackup now redirects stderr to /dev/null.

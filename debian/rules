@@ -1,0 +1,85 @@
+#!/usr/bin/make -f
+# rules file for dbbackup based on rules from GNU Hello.
+#
+# Sample debian/rules file - for GNU Hello.
+# Copyright 1994,1995 by Ian Jackson.
+# I hereby give you perpetual unlimited permission to copy,
+# modify and relicense this file, provided that you do not remove
+# my name from the file itself.  (I assert my moral right of
+# paternity under the Copyright, Designs and Patents Act 1988.)
+# This file may have to be extensively modified
+
+package = dbbackup
+docdir = debian/tmp/usr/share/doc/$(package)
+
+CC = gcc
+CFLAGS = -g -Wall
+INSTALL_PROGRAM = install
+
+ifeq (,$(findstring noopt,$(DEB_BUILD_OPTIONS)))
+	CFLAGS += -O2
+endif
+ifeq (,$(findstring nostrip,$(DEB_BUILD_OPTIONS)))
+	INSTALL_PROGRAM += -s
+endif
+
+configure: configure-stamp
+configure-stamp:
+	dh_testdir
+	# Add here commands to configure the package.
+	touch configure-stamp
+
+
+build: build-stamp
+
+build-stamp: configure-stamp
+	dh_testdir
+	# Add here commands to compile the package.
+	#docbook-to-man debian/vpostmaster.sgml > vpostmaster.1
+	touch build-stamp
+
+clean:
+	dh_testdir
+	dh_testroot
+	rm -f build-stamp configure-stamp
+
+	# Add here commands to clean up after the build process.
+	#
+	#    dh_clean
+	#
+	
+install: build
+	dh_testdir
+	dh_testroot
+	dh_clean -k 
+	dh_installdirs
+
+	install -d $(CURDIR)/debian/tmp/etc/cron.daily
+	install -d $(CURDIR)/debian/tmp/usr/bin
+
+	install -m 600 dbbackup.conf $(CURDIR)/debian/tmp/etc/dbbackup.conf
+	install -m 755 dbbackup $(CURDIR)/debian/tmp/etc/cron.daily/dbbackup
+	install -m 755 extract_sql $(CURDIR)/debian/tmp/usr/bin/
+
+# Build architecture-independent files here.
+binary-indep: build install
+# We have nothing to do by default.
+
+# Build architecture-dependent files here.
+binary-arch: build install
+	dh_testdir
+	dh_testroot
+	dh_installchangelogs 
+	dh_installdocs README LICENSE
+	dh_installexamples
+	dh_installcron
+	dh_link
+	dh_compress
+	dh_fixperms
+	dh_installdeb
+	dh_gencontrol
+	dh_md5sums
+	dh_builddeb
+
+binary: binary-indep binary-arch
+.PHONY: build clean binary-indep binary-arch binary install configure

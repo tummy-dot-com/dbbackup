@@ -1,0 +1,24 @@
+#!/bin/sh
+#
+#  Run when the .tar file is created, updates the .spec file.
+
+echo "Updating .spec file"
+dir=`pwd`
+rev=${dir##*-}
+for spec in *.spec
+do
+	cp "${spec}" "${spec}.old"
+	sed 's/^%define.*version.*/%define version '"$rev"'/' "${spec}.old" >"${spec}"
+	rm -f "${spec}.old"
+done
+rm -f BUILDING
+
+echo "Updating debian files"
+DEBIAN_DATE=`date "+%a, %e %b %Y %H:%M:%S %z"`
+cat <<@EOF >debian/changelog
+dbbackup (${rev}-1) stable; urgency=high
+
+   * Release ${rev} of dbbackup.
+
+ -- Mike Loseke <mike@tummy.com>  ${DEBIAN_DATE}
+@EOF
