@@ -61,7 +61,10 @@ then
 		tar c var/lib/rpm |
 				${COMPRESS} >"${DUMPDIR}"/"rpm-${DATE}.tar${COMPRESSEXT}"
 		rm -f "${DUMPDIR}"/"rpm.tar${COMPRESSEXT}" "${DUMPDIR}"/"rpm.tar"
-		ln "${DUMPDIR}"/"rpm-${DATE}.tar${COMPRESSEXT}" "${DUMPDIR}"/"rpm.tar${COMPRESSEXT}"
+		if [ "$HARDLINKMOSTRECENT" = yes ]; then
+			ln "${DUMPDIR}"/"rpm-${DATE}.tar${COMPRESSEXT}" \
+					"${DUMPDIR}"/"rpm.tar${COMPRESSEXT}"
+		fi
 	fi
 fi
 removeold "${DUMPDIR}" "${RPMKEEPDAYS}" "rpm"
@@ -75,8 +78,10 @@ then
 			${COMPRESS} >"${DUMPDIR}"/"postgres-${DATE}${COMPRESSEXT}"
 			) 2>/dev/null
 	rm -f "${DUMPDIR}"/postgres "${DUMPDIR}"/postgres.*
-	ln "${DUMPDIR}"/"postgres-${DATE}${COMPRESSEXT}" \
-			"${DUMPDIR}"/"postgres${COMPRESSEXT}"
+	if [ "$HARDLINKMOSTRECENT" = yes ]; then
+		ln "${DUMPDIR}"/"postgres-${DATE}${COMPRESSEXT}" \
+				"${DUMPDIR}"/"postgres${COMPRESSEXT}"
+	fi
 fi
 removeold "${DUMPDIR}" "${PGKEEPDAYS}" "postgres"
 
@@ -101,14 +106,18 @@ then
 		mysqluserdump --opt -A $OPTION_EVENTS >"${DUMPDIR}"/"mysql-${DATE}"
 		${COMPRESS} "${DUMPDIR}"/"mysql-${DATE}"
 		rm -f "${DUMPDIR}"/mysql "${DUMPDIR}"/mysql.*
-		ln "${DUMPDIR}"/"mysql-${DATE}${COMPRESSEXT}" \
-				"${DUMPDIR}"/"mysql${COMPRESSEXT}"
+		if [ "$HARDLINKMOSTRECENT" = yes ]; then
+			ln "${DUMPDIR}"/"mysql-${DATE}${COMPRESSEXT}" \
+					"${DUMPDIR}"/"mysql${COMPRESSEXT}"
+		fi
 	else
 		mysqluserdump --opt -A $OPTION_EVENTS | \
 				${COMPRESS} >"${DUMPDIR}"/"mysql-${DATE}${COMPRESSEXT}"
 		rm -f "${DUMPDIR}"/mysql "${DUMPDIR}"/mysql.*
-		ln "${DUMPDIR}"/"mysql-${DATE}${COMPRESSEXT}" \
-				"${DUMPDIR}"/"mysql${COMPRESSEXT}"
+		if [ "$HARDLINKMOSTRECENT" = yes ]; then
+			ln "${DUMPDIR}"/"mysql-${DATE}${COMPRESSEXT}" \
+					"${DUMPDIR}"/"mysql${COMPRESSEXT}"
+		fi
 	fi
 fi
 removeold "${DUMPDIR}" "${MYSQLKEEPDAYS}" "mysql"
