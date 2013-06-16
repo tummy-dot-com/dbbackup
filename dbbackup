@@ -9,6 +9,7 @@
 VERSION='$Revision: 1.17 $'
 
 #  read config file
+[ -f /etc/dbbackup.conf-dist ] && . /etc/dbbackup.conf-dist
 . /etc/dbbackup.conf
 
 DATE=`date +%Y-%m-%d`

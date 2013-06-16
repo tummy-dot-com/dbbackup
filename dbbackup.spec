@@ -30,6 +30,7 @@ by default, are written to "/var/lib/dbbackup".
 [ -n "$RPM_BUILD_ROOT" -a "$RPM_BUILD_ROOT" != / ] && rm -rf "$RPM_BUILD_ROOT"
 mkdir -p "$RPM_BUILD_ROOT"/etc/cron.daily
 cp dbbackup "$RPM_BUILD_ROOT"/etc/cron.daily
+cp dbbackup.conf-dist "$RPM_BUILD_ROOT"/etc/dbbackup.conf-dist
 cp dbbackup.conf "$RPM_BUILD_ROOT"/etc/dbbackup.conf
 chmod 700 "$RPM_BUILD_ROOT"/etc/dbbackup.conf
 mkdir -p "$RPM_BUILD_ROOT"/usr/bin
@@ -43,6 +44,7 @@ chmod 755 "$RPM_BUILD_ROOT"/usr/bin/extract_sql
 %defattr(-,root,root)
 %doc README LICENSE
 %attr(755,root,root) /etc/cron.daily/dbbackup
+%attr(600,root,root) /etc/dbbackup.conf-dist
 %config(noreplace) %attr(600,root,root) /etc/dbbackup.conf
 %attr(755,root,root) /usr/bin/extract_sql
 

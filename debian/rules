@@ -57,6 +57,7 @@ install: build
 	install -d $(CURDIR)/debian/tmp/etc/cron.daily
 	install -d $(CURDIR)/debian/tmp/usr/bin
 
+	install -m 600 dbbackup.conf-dist $(CURDIR)/debian/tmp/etc/dbbackup.conf-dist
 	install -m 600 dbbackup.conf $(CURDIR)/debian/tmp/etc/dbbackup.conf
 	install -m 755 dbbackup $(CURDIR)/debian/tmp/etc/cron.daily/dbbackup
 	install -m 755 extract_sql $(CURDIR)/debian/tmp/usr/bin/

@@ -1,43 +1,45 @@
 ###########################################################################
-#  NOTE: Entries in this file are commented out, with the default values in
-#  place.  Defaults are pulled from dbbackup.conf-dist, but that file
-#  should not be modified.
+#  WARNING: This file contains the default values and should *NOT* be
+#  modified.  Override this file by setting values in "dbbbackup.conf".
+#  This file should be left unmodified so that future package updates can
+#  modify the defaults, if you modify this file it will cause update
+#  problems.
 ###########################################################################
 
 #  Directory where backups are stored.
-#DUMPDIR=/var/lib/dbbackup
+DUMPDIR=/var/lib/dbbackup
 
 #  RPM database backups
-#DORPM=yes
-#RPMKEEPDAYS=90
-#RPMRUNDAYS=15
+DORPM=yes
+RPMKEEPDAYS=90
+RPMRUNDAYS=15
 
 #  PostgreSQL enabled because it needs no password
-#DOPOSTGRES=yes
-#PGKEEPDAYS=5
+DOPOSTGRES=yes
+PGKEEPDAYS=5
 
 #  MySQL disabled because it requires a password
-#MYSQLUSER=root
-#MYSQLPW=
-#DOMYSQL=no
-#MYSQLKEEPDAYS=5
+MYSQLUSER=root
+MYSQLPW=
+DOMYSQL=no
+MYSQLKEEPDAYS=5
 #  If set to "yes", the compression will be done after the data is written.
 #  This takes more disc space, but reduces the time the database is locked.
-#MYSQLCOMPRESSAFTER=no
+MYSQLCOMPRESSAFTER=no
 #  If set to "yes", two dumps will be done.  The first is done without any
 #  locks, and dumps to /dev/null, to try to get everything cached.
-#MYSQLPRECACHEDATA=no
+MYSQLPRECACHEDATA=no
 
-#COMPRESS='gzip -9'  #  default to bzip below if installed
-#COMPRESSEXT='.gz'
-#if [ -x /usr/bin/bzip2 -o -x /bin/bzip2 ]
-#then
-#   COMPRESS='bzip2 -9'
-#   COMPRESSEXT='.bz2'
-#fi
+COMPRESS='gzip -9'  #  default to bzip below if installed
+COMPRESSEXT='.gz'
+if [ -x /usr/bin/bzip2 -o -x /bin/bzip2 ]
+then
+   COMPRESS='bzip2 -9'
+   COMPRESSEXT='.bz2'
+fi
 
 #  If set to "yes", a hard link will be made from the most recent dated
 #  copy will also be sym-linked to a name without the date.  This is to
 #  allow you to backup only the most recent version to other media more
 #  easily.
-#HARDLINKMOSTRECENT=no
+HARDLINKMOSTRECENT=no
