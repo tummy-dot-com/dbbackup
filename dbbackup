@@ -105,6 +105,7 @@ then
 
 	if [ "$MYSQLCOMPRESSAFTER" == 1 -o "$MYSQLCOMPRESSAFTER" == yes ]; then
 		mysqluserdump --opt -A $OPTION_EVENTS >"${DUMPDIR}"/"mysql-${DATE}"
+		rm -f "${DUMPDIR}"/"mysql-${DATE}""$COMPRESSEXT"
 		${COMPRESS} "${DUMPDIR}"/"mysql-${DATE}"
 		rm -f "${DUMPDIR}"/mysql "${DUMPDIR}"/mysql.*
 		if [ "$HARDLINKMOSTRECENT" = yes ]; then
