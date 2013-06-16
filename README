@@ -15,4 +15,6 @@ to do them).  To enable, edit "/etc/dbbackup.conf".  PostgreSQL and RPM
 database backups are enabled by default.
 
 It also makes a hardlink for the latest backup into a non-date based
-version, to make it easier on backup systems.
+version, to make it easier on backup systems.  This must be enabled in the
+config file.  The backup system should also be configured to ignore the
+date-based files or duplicates of the data will be stored.
