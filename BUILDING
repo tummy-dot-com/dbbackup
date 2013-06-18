@@ -35,6 +35,15 @@ cd /home/jafo/projects/dbbackup-yum/ &&
    ssh root@theobromine 'cd dbbackup/repo && bash setup.deb' &&
    rsync -av --delete --progress root@theobromine:dbbackup/repo/ .
 
+echo ""
+echo "  ####      #     ####   #    #"
+echo " #          #    #    #  ##   #"
+echo "  ####      #    #       # #  #"
+echo "      #     #    #  ###  #  # #"
+echo " #    #     #    #    #  #   ##"
+echo "  ####      #     ####   #    #"
+echo ""
+
 ./sign
 
 rsync -av --delete deb/ root@dev:/mnt/data1/yum/dbbackup/deb/
