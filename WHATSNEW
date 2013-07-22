@@ -1,4 +1,9 @@
 ================================
+Version 1.26 -- Mon Jul 22, 2013
+
+Fixing a typo in the dbbackup.conf-dist file, reported by Kristen Shuemaker.
+
+================================
 Version 1.25 -- Tue Jun 18, 2013
 
 Diabling hardlinks by default.

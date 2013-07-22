@@ -1,6 +1,6 @@
 ###########################################################################
 #  WARNING: This file contains the default values and should *NOT* be
-#  modified.  Override this file by setting values in "dbbbackup.conf".
+#  modified.  Override this file by setting values in "dbbackup.conf".
 #  This file should be left unmodified so that future package updates can
 #  modify the defaults, if you modify this file it will cause update
 #  problems.
