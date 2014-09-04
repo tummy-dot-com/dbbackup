@@ -30,6 +30,12 @@ MYSQLCOMPRESSAFTER=no
 #  locks, and dumps to /dev/null, to try to get everything cached.
 MYSQLPRECACHEDATA=no
 
+#  MongoDB
+DOMONGO=no
+MONGOKEEPDAYS=5
+MONGODUMP=/usr/bin/mongodump
+MONGOCOMPRESS=yes
+
 COMPRESS='gzip -9'  #  default to bzip below if installed
 COMPRESSEXT='.gz'
 if [ -x /usr/bin/bzip2 -o -x /bin/bzip2 ]
