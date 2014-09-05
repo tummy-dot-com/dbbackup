@@ -6,7 +6,7 @@
 #  Released under the Tummy Public License (based on the Mozilla Public License)
 #  See http://www.tummy.com/ for more information.
 
-VERSION='$Revision: 1.18 $'
+VERSION='$Revision: 1.27 $'
 
 #  read config file
 [ -f /etc/dbbackup.conf-dist ] && . /etc/dbbackup.conf-dist

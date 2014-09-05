@@ -1,4 +1,9 @@
 ================================
+Version 1.27 -- Fri Sep 5, 2014
+
+Added support for MongoDB.
+
+================================
 Version 1.26 -- Mon Jul 22, 2013
 
 Fixing a typo in the dbbackup.conf-dist file, reported by Kristen Shuemaker.

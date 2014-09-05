@@ -4,11 +4,11 @@ http://www.tummy.com/
 Written by Sean Reifschneider, tummy.com, ltd.  <jafo-dbbackup@tummy.com>
 Distributed under the GNU Public License.
 
-This is a simple script that can be used to back up Postgres, MySQL, and
-the system RPM databases running on the system.  It writes the backups
+This is a simple script that can be used to back up Postgres, MySQL, MongoDB
+and the system RPM databases running on the system.  It writes the backups
 out to a directory and deletes files older than a certain number of days.
-It's operation can be modified by editing "/etc/dbbackup.conf".  Backups,
-by default, are written to "/var/lib/dbbackup".
+It's operation can be modified by editing "/etc/dbbackup.conf".  Backups, by
+default, are written to "/var/lib/dbbackup".
 
 MySQL backups by default are disabled (because you probably need a password
 to do them).  To enable, edit "/etc/dbbackup.conf".  PostgreSQL and RPM
