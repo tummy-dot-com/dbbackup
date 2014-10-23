@@ -1,4 +1,9 @@
 ================================
+Version 1.28 -- Fri Sep 5, 2014
+
+Fixed mongodb hardlinking.
+
+================================
 Version 1.27 -- Fri Sep 5, 2014
 
 Added support for MongoDB.
