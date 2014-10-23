@@ -6,7 +6,7 @@
 #  Released under the Tummy Public License (based on the Mozilla Public License)
 #  See http://www.tummy.com/ for more information.
 
-VERSION='$Revision: 1.27 $'
+VERSION='$Revision: 1.28 $'
 
 #  read config file
 [ -f /etc/dbbackup.conf-dist ] && . /etc/dbbackup.conf-dist
@@ -136,9 +136,9 @@ then
         /bin/rm -r mongodb-${DATE}
         MONGOCOMPRESS=`echo $MONGOCOMPRESS | tr [A-Z] [a-z]`
         [ "$MONGOCOMPRESS" = 'yes' ] && $COMPRESS mongodb-${DATE}.tar
-        rm -f mongodb mongodb.*
+        /bin/rm -f mongodb mongodb.*
 	if [ "$HARDLINKMOSTRECENT" = yes ]; then
-		ln "mongodb-${DATE}.tar${COMPRESSEXT}" "mongodb${COMPRESSEXT}"
+		ln "mongodb-${DATE}.tar${COMPRESSEXT}" "mongodb.tar${COMPRESSEXT}"
 	fi
         cd -
 fi
